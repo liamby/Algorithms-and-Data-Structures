@@ -1,3 +1,8 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.Scanner;
+
 // -------------------------------------------------------------------------
 
 /**
@@ -121,17 +126,19 @@
 //swap IFL with pivot 
     private static int partition(double[] a, int lo, int hi) {
 		 
-    	int pivotPos = a.length-1;
-    	int i = -1;
-    	for (int j = 0; j<a.length-1; j++) {
-    		if (a[j] < a[pivotPos]) {
-    			i++;
-    			double tmp = a[j];
-    			a[j] = a[i];
-    			a[i] = tmp;
+    	int leftWall = lo;
+    	for (int i = lo+1; i<hi; i++) {
+    		if (a[i] < a[leftWall]) {
+    			double tmp = a[i];
+    			a[i] = a[leftWall];
+    			a[leftWall] = tmp;
+    			leftWall++;
     		}
     	}
-		return pivotPos;
+    	double tmp = a[leftWall];
+		a[leftWall] = a[lo];
+		a [lo] = tmp;
+		return leftWall;
 	}
 
     /**
@@ -151,10 +158,10 @@
 
     static double[] mergeSortIterative (double a[]) {
     	
-        if(a == null) 
-        { 
-            //Println("ERROR: array is null "); 
-        } 
+    	//check array is not null
+    	if (a ==null) {
+ 	    	return a;
+ 	    }
       
         if(a.length > 1) 
         { 
@@ -303,13 +310,66 @@
    } 
 
 
-    public static void main(String[] args) {
+   public static void main(String[] args)
+   {
+   	// read in numbers10 file and create a double[].
+   	String fileName = "numbersSorted1000.txt";
+   	int size = 1000;
+   	double  a [] = createArray(fileName, size);
+   	System.out.println(Arrays.toString(a));
+   	timeTaken (a);
+   		
+   }
 
-        //TODO: do experiments as per assignment instructions
-    	double [] a = {1,2,3,4,5};
-    	SortComparison.quickSort(a);
-    	
-    }
-
+   	//creates an array of doubles from a file 
+	public static double[] createArray(String fileName, int size) {
+   	try {
+			File f = new File(fileName);
+			Scanner in = new Scanner(f);
+			double[]a = new double[size];
+			for (int index = 0; (index < a.length); index ++) {
+				a[index] = in.nextDouble();
+			}
+			in.close();
+			return a;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			double[]a = new double[size];
+			return a;
+		}
+	}
+	
+	//records the time taken 
+	public static void timeTaken (double [] a) {
+   	// run on different sorting algorithms.
+	double startTime;
+	double endTime;
+	
+	startTime = System.nanoTime();
+   	SortComparison.insertionSort(a);
+   	endTime = System.nanoTime();
+   	System.out.println(endTime - startTime);
+   	
+	startTime = System.nanoTime();
+   	SortComparison.selectionSort(a);
+   	endTime = System.nanoTime();
+   	System.out.println(endTime - startTime);
+   	
+	startTime = System.nanoTime();
+   	SortComparison.mergeSortIterative(a);
+   	endTime = System.nanoTime();
+   	System.out.println(endTime - startTime);
+   	
+	startTime = System.nanoTime();
+   	SortComparison.mergeSortRecursive(a);
+   	endTime = System.nanoTime();
+   	System.out.println(endTime - startTime);
+   	
+   	startTime = System.nanoTime();
+   	SortComparison.quickSort(a);
+   	endTime = System.nanoTime();
+   	System.out.println(endTime - startTime);
+	}
+	
  }//end class
 
